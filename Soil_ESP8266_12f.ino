@@ -1,6 +1,7 @@
 //Rev0 - Soil temperature, moisture, and battery level reporting.  OTA update support.
 //       HTTP post packet destination configurable via WiFi SoilTempAP.
 //Rev1 - Deep Sleep supported on ESP12f.
+//Rev2 - Retry effectively forever on failed data push attempts - wifi reconfig requires code change
 // Credits to these include file/code providers:
 #include <FS.h>                   //this needs to be first, or it all crashes and burns...
 
@@ -56,9 +57,10 @@ float temperature = -55.0;
 
 const unsigned max_hours_for_AP_config = 1;  // after this time device idles and waits for pwr reset
 const unsigned max_minutes_for_update = 20;
-const unsigned int max_send_fail_cnt = 4;
+const unsigned int max_send_fail_cnt = 999;
 unsigned int send_fail_cnt = 0;
-unsigned long update_start_time;
+bool send_data_success = false;
+unsigned long update_start_time = 0;
 const unsigned long sleep_time_in_ms = 30 * 60 * 1000;  // poll rate of temperature - 30 minutes
 //const unsigned long sleep_time_in_ms = 2 * 60 * 1000;  // poll rate of temperature - test
 
@@ -72,7 +74,7 @@ DallasTemperature DS18B20(&oneWire);
 WiFiClient client;
 const int httpPort = 8080;
 
-const char * AP_pwd = "your_pwd";
+const char * AP_pwd = "yourpwd";
 
 
 //callback notifying us of the need to save config
@@ -160,7 +162,8 @@ void get_temperature() {
 bool send_data() {
   bool success = false;
 
-  String senddata = "temperature=" + String(temperature) + "&moisture=" + String(moisture) + "&batt=" + String(vdd);
+  String senddata = "temperature=" + String(temperature) + "&moisture=" + String(moisture) +
+                    "&batt=" + String(vdd) + "&fail=" + String(send_fail_cnt);
 
   DBG("Requesting URL: ");
   DBGL(url);
@@ -186,12 +189,6 @@ bool send_data() {
       }
     }
     client.stop();
-    // If update requested, switch mode to that
-    if(update == true) {
-      delay(1000);
-      ArduinoOTA.begin();
-      delay(1000);
-    }
   }
   return success;
 }
@@ -308,7 +305,7 @@ int send_fail_cnt;
   //useful to make it all retry or go to sleep
   //in seconds
   
-  wifiManager.setTimeout(60*60);  // 1 hour
+  wifiManager.setTimeout(10*60);  // 10 minutes
 
   //fetches ssid and pass and tries to send temperature
   //if it does not connect it starts an access point with the specified name
@@ -322,17 +319,16 @@ int send_fail_cnt;
     } 
   }
 
-  // Send and flag json update if needed
-  if (WiFi.status() != WL_CONNECTED || send_data() == false) {
+  if (WiFi.status() == WL_CONNECTED) {
+    send_data_success = send_data();
+    ArduinoOTA.begin();
+  }
+  // flag json update if needed
+  if (WiFi.status() != WL_CONNECTED || send_data_success == false) {
     send_fail_cnt++;
     shouldSaveConfig = true;
     if(send_fail_cnt >= max_send_fail_cnt) {
-      WiFi.disconnect(); // Wipe SSID
-    }
-  } else {
-    if(send_fail_cnt > 0) {
       send_fail_cnt = 0;
-      shouldSaveConfig = true;
     }
   }
 
@@ -356,6 +352,9 @@ int send_fail_cnt;
     //end save
   }
   if(!update) {
+    if (WiFi.status() == WL_CONNECTED && send_data_success == false) {
+      delay(20000); // Keep WiFi active for possible update
+    }
     disconnect();
     ESP.deepSleep(sleep_time_in_ms * 1000);
     // no code path here - resets after timeout
@@ -370,7 +369,6 @@ void loop() {
     delay(3000);
   }
 }
-
 
 
 

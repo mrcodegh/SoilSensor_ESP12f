@@ -1,17 +1,25 @@
 # SoilSensor_ESP12f
 Soil temperature and moisture reporting using ESP8266 12f.
 
+Components:
+- ESP8266-12F
+- DS1820 temperature sensor
+- SEN0193 moisture sensor
+- (optional) Android phone to run BitWeb Server which runs PHP file to receive data.
+
 Periodic (30 minute) reporting of soil temperature, moisture, and ESP8266 supply
 voltage to a configurable host and URL. Configuration is done via connecting to
-WiFi Access Point SoilTempAP.  The 12f will go into access point mode on initial use
-or if 4 consecutive data sends fail. Uses deep sleep mode for ~20uA
+WiFi Access Point SoilTempAP with "yourpwd".  The 12f will go into access point mode
+on initial use or if connect to router fails. Uses deep sleep mode for ~20uA
 standby current or 70mA in AP mode.  Supports OTA update if the receiving host php file
 is modified to return "update" rather than success on a data http POST.
 See schematic for hardware details. In my application I am using the
 Starry Light Solar light string for power.  This is way overkill (solar cell covered most of the time) 
 providing 100s of mAh where only 10s mAh are needed.  3 AA or AAA
-non rechargeable cells should provide many months via ESP deep sleep. Moisture
-sensor is capacitive type SEN0193 (not fully implemented yet).
+non rechargeable cells should provide many months via ESP deep sleep.  Moisture
+sensor is capacitive type SEN0193.  It appears to be only slightly temperature
+sensitive - see plot jpg.  Calibration is done via soaking in water and noting dry and soaked
+A/D points.  Put these points in your rcvsoiltempdata.php.
 
 This is part of my Weather Underground reporting solution.  The soil
 sensor sends http POST packets to Bit Web Server running on my
