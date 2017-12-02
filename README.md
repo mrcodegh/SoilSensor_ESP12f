@@ -2,10 +2,10 @@
 Soil temperature and moisture reporting using ESP8266 12f.
 
 Components:
-ESP8266-12F
-DS1820 temperature sensor
-SEN0193 moisture sensor
-(optional) Android phone to run BitWeb Server which runs PHP file to receive data.
+- ESP8266-12F
+- DS1820 temperature sensor
+- SEN0193 moisture sensor
+- (optional) Android phone to run BitWeb Server which runs PHP file to receive data.
 
 Periodic (30 minute) reporting of soil temperature, moisture, and ESP8266 supply
 voltage to a configurable host and URL. Configuration is done via connecting to
