@@ -21,7 +21,7 @@ sensor is capacitive type SEN0193.  It appears to be only slightly temperature
 sensitive - see plot jpg.  Calibration is done via soaking in water and noting dry and soaked
 A/D points.  Put these points in your rcvsoiltempdata.php.
 
-This is part of my Weather Underground reporting solution.  The soil
+This is part of my Weather Underground, weathercloud.net, pwsweather.com solution.  The soil
 sensor sends http POST packets to Bit Web Server running on my
 Cloud Pic cell phone:
 https://github.com/mrcodegh/WU-Cloud-Cam-Pics-via-Android.
