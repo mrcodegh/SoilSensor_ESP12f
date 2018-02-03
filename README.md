@@ -13,12 +13,10 @@ WiFi Access Point SoilTempAP with "yourpwd".  The 12f will go into access point 
 on initial use or if connect to router fails. Uses deep sleep mode for ~20uA
 standby current or 70mA in AP mode.  Supports OTA update if the receiving host php file
 is modified to return "update" rather than success on a data http POST.
-See schematic for hardware details. In my application I am using the
-Starry Light Solar light string for power.  This is way overkill (solar cell covered most of the time) 
-providing 100s of mAh where only 10s mAh are needed.  3 AA or AAA
-non rechargeable cells should provide many months via ESP deep sleep.  Moisture
+See schematic for hardware details. Currently using 3 AA batteries for power.  Moisture
 sensor is capacitive type SEN0193.  It appears to be only slightly temperature
-sensitive - see plot jpg.  Calibration is done via soaking in water and noting dry and soaked
+sensitive - see plot jpg.  Update - at freezing crossover you will see non linear changes.
+Calibration is done via soaking in water and noting dry and soaked
 A/D points.  Put these points in your rcvsoiltempdata.php.
 
 This is part of my Weather Underground, weathercloud.net, pwsweather.com solution.  The soil
