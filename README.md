@@ -26,6 +26,7 @@ https://github.com/mrcodegh/WU-Cloud-Cam-Pics-via-Android.
 See php files in this repo (SoilSensor_ESP12f) for how soil data is combined with
 WS1400-IP weather station data and sent on to WU. These php files are located on the phone here:
 /sdcard/www/weatherstation/updateweatherstation.php
+/sdcard/www/weatherstation/wxstationlastupdate.php
 /sdcard/www/soiltemperature/rcvsoiltempdata.php
 Thanks to Pat for the redirect idea: https://obrienlabs.net/redirecting-weather-station-data-from-observerip/
 
